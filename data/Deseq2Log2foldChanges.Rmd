@@ -1,0 +1,34 @@
+---
+title: "DESeq2 log2 fold changes"
+author: "Timothy Daley"
+date: "7/13/2018"
+output: html_document
+---
+
+```{r}
+ricintilingFinal_readcounts = read.table(file = "20140519_ricintilingFinal_readcounts.csv", sep = ",", header = TRUE)
+head(ricintilingFinal_readcounts)
+ricintilingFinal_readcounts = ricintilingFinal_readcounts[ ,c(1, grep("VP64", colnames(ricintilingFinal_readcounts)))]
+head(ricintilingFinal_readcounts)
+counts = ricintilingFinal_readcounts[ ,grep("dCas9.VP64", colnames(ricintilingFinal_readcounts))]
+counts = counts[ ,1:8]
+colData = data.frame(condition = factor(c(1, 1, 1, 1, 0, 0, 0, 0)), replicate = factor(c("LG", "LG2", "MH", "MH2", "LG", "LG2", "MH", "MH2")) )
+rownames(colData) = colnames(counts)
+
+library(DESeq2)
+ricinDESeq = DESeq2::DESeqDataSetFromMatrix(countData = counts, colData = colData, design = ~ condition)
+ricinDESeq = DESeq2::DESeq(ricinDESeq)
+ricinDESeq = DESeq2::results(ricinDESeq)
+log2fc = ricinDESeq$log2FoldChange
+
+geneLabels = read.table(file = "20140519_ricintilingFinal.txt", sep = "\t", header=TRUE)
+dim(geneLabels)
+head(geneLabels)
+geneLabels = geneLabels[match(ricintilingFinal_readcounts$name, geneLabels$name), ]
+head(geneLabels)
+dim(geneLabels)
+dim(counts)
+
+library(ggplot2)
+ggplot(data.frame(log2fc = log2fc, category = geneLabels$element_type), aes(x = log2fc, y = ..density.., colour = category)) + geom_density()  + theme_bw() + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line = element_line(colour = "black")) 
+```
