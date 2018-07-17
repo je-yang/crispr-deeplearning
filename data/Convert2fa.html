@@ -140,7 +140,7 @@ write_seqs &lt;- function(seqs, names, filename){
         }
   }
 }
-write_seqs(sapply(guides$guide_seq, toString), sapply(guides$name, toString), &quot;WeissmanTilingScreenGuideSequence.fa&quot;)</code></pre>
+write_seqs(sapply(guides$guide_seq[which(guides$element_type != &quot;negative_control&quot;)], toString), sapply(guides$name[which(guides$element_type != &quot;negative_control&quot;)], toString), &quot;WeissmanTilingScreenGuideSequence.fa&quot;)</code></pre>
 
 
 
