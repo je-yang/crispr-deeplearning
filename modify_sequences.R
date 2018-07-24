@@ -77,14 +77,21 @@ mod_seq <- function(x){
 
 mod_bgr <- mod_seq(bgr.mod)
 seqs <- getSeq(BSgenome.Hsapiens.UCSC.hg19, mod_bgr, as.character=TRUE)
+write.csv(seqs, file = "/Users/JYang/Desktop/Stanford/modified_sequences_unfiltered.csv")
 seqs.mod <- seqs
 
 install.packages("gsubfn")
 library(gsubfn) 
 #check which do not have GG in 32, 33 pos
 sum(strapply(seqs, "(..).....$", simplify = TRUE) != "GG")
+
+#indices to remove (line below used in lasso.R)
+remove_idx <- which(bam_df$flag == 4)
+remove_idx2 <- which(strapply(seqs, "(..).....$", simplify = TRUE) != "GG")
+
 condition <- lapply(seqs.mod, function(x) strapply(x, "(..).....$", simplify = TRUE) == "GG")
 seqs_final <- seqs.mod[unlist(condition)]
+write.csv(seqs_final, file = "modified_sequences.csv")
 
 #create sequence logo
 install.packages("ggseqlogo")
